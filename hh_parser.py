@@ -49,7 +49,6 @@ def main():
 
     if html:
         soup = BeautifulSoup(html, "lxml")
-
         parsed_vacancies = []
 
         titles = soup.find_all(attrs={"data-qa": "vacancy_of_the_day_title"})
@@ -74,11 +73,21 @@ def main():
                 "sort_value": parse_salary_for_sorting(salary_text)
             })
 
+        # Сортировка по убыванию зарплаты
         parsed_vacancies.sort(key=lambda x: x["sort_value"], reverse=True)
 
-        print("Список найденных вакансий:")
-        for v in parsed_vacancies:
-            print(f"\n{v['title']} ({v['address']}) - {v['salary']}")
+        with open("vacancies.txt", "w", encoding="utf-8") as file:
+            header = "Список найденных вакансий:"
+            print(header)
+            file.write(header + "\n")
+
+            for v in parsed_vacancies:
+                vacancy_line = f"\n{v['title']} ({v['address']}) - {v['salary']}"
+
+                print(vacancy_line)  # Вывод в терминал
+                file.write(vacancy_line + "\n")  # Запись в файл
+
+        print(f"\nРезультаты успешно сохранены в файл 'vacancies.txt'")
 
     else:
         print("Не удалось получить HTML код страницы.")
